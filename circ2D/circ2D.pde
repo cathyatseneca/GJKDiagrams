@@ -1,5 +1,6 @@
 class GridBackGround{
   void draw(){
+    background(#FFFFFF);
     stroke(#00FFFF);
     int numAcross=canvasHeight/50;
     int numDown=canvasWidth/50;
@@ -44,6 +45,7 @@ class Circle{
     stroke(outlinecolour);
     ellipse(originX+(posX*5), originY-(posY*5),radius*5,radius*5);
   }
+  boolean onEdge(int x,int y){return true;}
 }
 class Vector{
   Circle from;
@@ -73,11 +75,10 @@ void draw(){
   redCircle.draw();
   greenCircle.draw(); */
 }
-mousePressed(){
-  if(value==0){
-    if(blueCircle.onEdge(mouseX,mouseY))
+void mousePressed(){
+ 
+   if(blueCircle.onEdge(mouseX,mouseY))
       blueCircle.selected=true;
-  }
 }
-mouseReleased(){
+void mouseReleased(){
 }
