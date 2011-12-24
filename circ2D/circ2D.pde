@@ -33,19 +33,32 @@ class Circle{
   float posY;  //in grid coordinate;
   float radius;
   color outlinecolour;
-  boolean selected;
+  boolean moving;
   Circle(float x, float y, float r, color co){
     posX=x;
     posY=y;
     radius=r;
     outlinecolour=co;
-    selected=false;
+    moving=false;
   }
   void draw(){
+    float centreX=originX+(posX*5);
+    float centreY=originY-(posY*5);
     stroke(outlinecolour);
-    ellipse(originX+(posX*5), originY-(posY*5),radius*5,radius*5);
+    ellipse(centreX, centreY,radius*5,radius*5);
+    line(centreX,centreY-5,centreX,centreY+5);
+    line(centreX-5,centreY,centreX+5,centreY);
   }
   boolean onEdge(int x,int y){return true;}
+  boolean onCentre(int x,int y){
+    float centreX=originX+(posX*5);
+    float centreY=originY-(posY*5);
+    boolean rc=false;
+    if(((x-centreX)*(x-centreX) + (y-centreY)*(y-centreY))<25){
+      rc=true;
+    }
+    return rc;
+  }
 }
 class Vector{
   Circle from;
@@ -56,14 +69,14 @@ class Vector{
     
   }
 }
-Circle blueCircle=new Circle(5,5,50,#0000FF);
-Circle redCircle;
+Circle blueCircle=new Circle(5,5,10,#0000FF);
+Circle redCircle=new Circle(10,10,20,#FF0000);
 Circle greenCircle;
 GridBackGround bg=new GridBackGround();
 int canvasWidth=900;
 int canvasHeight=500;
-int originX=canvasWidth/2;
-int originY=canvasHeight/2;
+float originX=canvasWidth/2;
+float originY=canvasHeight/2;
 void setup(){
   size(canvasWidth,canvasHeight);
   noFill();
@@ -71,14 +84,28 @@ void setup(){
 void draw(){
   bg.draw();
   blueCircle.draw();
- /*
   redCircle.draw();
-  greenCircle.draw(); */
+ /* greenCircle.draw(); */
 }
 void mousePressed(){
- 
-   if(blueCircle.onEdge(mouseX,mouseY))
-      blueCircle.selected=true;
+   if(blueCircle.onCentre(mouseX,mouseY)){
+      blueCircle.moving=true;
+   }
+   if(redCircle.onCentre(mouseX,mouseY)){
+     redCircle.moving=true;
+   }
+}
+void mouseDragged(){
+  if(blueCircle.moving){
+    blueCircle.posX=(mouseX-originX)/5;
+    blueCircle.posY=(originY-mouseY)/5;
+  }
+  if(redCircle.moving){
+    redCircle.posX=(mouseX-originX)/5;
+    redCircle.posY=(originY-mouseY)/5;
+  }
 }
 void mouseReleased(){
+  blueCircle.moving=false;
+  redCircle.moving=false;
 }
