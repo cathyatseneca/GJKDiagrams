@@ -47,9 +47,13 @@ class Circle{
     float cX=centreX();
     float cY=centreY();
     stroke(outlinecolour);
-    ellipse(cX, cY,radius*5,radius*5);
+    ellipse(cX, cY,radius*10,radius*10);
     line(cX,cY-5,cX,cY+5);
     line(cX-5,cY,cX+5,cY);
+  }
+  void setPos(float x,float y){
+    posX=x;
+    posY=y;
   }
   boolean onEdge(int x,int y){return true;}
   boolean onCentre(int x,int y){
@@ -99,15 +103,20 @@ class Vector{
       popMatrix();      
     }
 }
-Circle blueCircle=new Circle(5,5,10,#0000FF);
-Circle redCircle=new Circle(10,10,20,#FF0000);
-Vector crcb=new Vector(blueCircle.centreX(),blueCircle.centreY(),redCircle.centreX(),redCircle.centreY(),#000000,true);
-Circle greenCircle;
-GridBackGround bg=new GridBackGround();
 int canvasWidth=900;
 int canvasHeight=500;
 float originX=canvasWidth/2;
 float originY=canvasHeight/2;
+Circle blueCircle=new Circle(30,30,20,#0000FF);
+Circle redCircle=new Circle(60,10,10,#FF0000);
+Circle greenCircle=new Circle(redCircle.posX-blueCircle.posX,redCircle.posY-blueCircle.posY,30,#00FF00);
+Vector crcb=new Vector(blueCircle.centreX(),blueCircle.centreY(),redCircle.centreX(),redCircle.centreY(),#000000,true);
+Vector cb=new Vector(originX,originY,blueCircle.centreX(),blueCircle.centreY(),#0000FF,true);
+Vector cr=new Vector(originX,originY,redCircle.centreX(),redCircle.centreY(),#FF0000,true);
+Vector cg=new Vector(originX,originY,greenCircle.centreX(),greenCircle.centreY(),#00FF00,true);
+
+GridBackGround bg=new GridBackGround();
+
 void setup(){
   size(canvasWidth,canvasHeight);
   noFill();
@@ -115,10 +124,18 @@ void setup(){
 void draw(){
   crcb.setFrom(blueCircle.centreX(),blueCircle.centreY());
   crcb.setTo(redCircle.centreX(),redCircle.centreY());
+  cr.setTo(redCircle.centreX(),redCircle.centreY());
+  cb.setTo(blueCircle.centreX(),blueCircle.centreY());
+  cg.setTo(greenCircle.centreX(),greenCircle.centreY());
+  greenCircle.setPos(redCircle.posX-blueCircle.posX,redCircle.posY-blueCircle.posY);
   bg.draw();
   blueCircle.draw();
   redCircle.draw();
+  greenCircle.draw();
   crcb.draw();
+  cr.draw();
+  cb.draw();
+  cg.draw();
  /* greenCircle.draw(); */
 }
 void mousePressed(){
