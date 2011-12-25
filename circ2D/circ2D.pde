@@ -32,14 +32,21 @@ class Circle{
   float posX;  //in grid coordinate
   float posY;  //in grid coordinate;
   float radius;
+  boolean doFill;
   color outlinecolour;
   boolean moving;
+  boolean scaling;
   Circle(float x, float y, float r, color co){
     posX=x;
     posY=y;
     radius=r;
+    scaling=false;
     outlinecolour=co;
     moving=false;
+    doFill=false;
+  }
+  void setFill(boolean df){
+    doFill=df;
   }
   float centreX(){return originX+(posX*5);}
   float centreY(){return originY-(posY*5);}
@@ -47,6 +54,14 @@ class Circle{
     float cX=centreX();
     float cY=centreY();
     stroke(outlinecolour);
+  
+    if(doFill){
+ 
+      fill(outlinecolour,50);
+    }
+    else{
+      noFill();
+    }
     ellipse(cX, cY,radius*10,radius*10);
     line(cX,cY-5,cX,cY+5);
     line(cX-5,cY,cX+5,cY);
@@ -55,7 +70,20 @@ class Circle{
     posX=x;
     posY=y;
   }
-  boolean onEdge(int x,int y){return true;}
+  void setRadius(float r){
+    radius=r;
+  }
+  boolean onEdge(int x,int y){
+    float cX=centreX();
+    float cY=centreY();
+    float dist=sqrt((x-cX)*(x-cX)+(y-cY)*(y-cY));
+    boolean rc=false;
+    if(dist > (radius*5)-5 && dist < (radius*5)+5){
+      rc=true;
+    }
+    return rc;
+     
+  }
   boolean onCentre(int x,int y){
     float cX=centreX();
     float cY=centreY();
@@ -110,7 +138,7 @@ float originY=canvasHeight/2;
 Circle blueCircle=new Circle(30,30,20,#0000FF);
 Circle redCircle=new Circle(60,10,10,#FF0000);
 Circle greenCircle=new Circle(redCircle.posX-blueCircle.posX,redCircle.posY-blueCircle.posY,30,#00FF00);
-Vector crcb=new Vector(blueCircle.centreX(),blueCircle.centreY(),redCircle.centreX(),redCircle.centreY(),#000000,true);
+Vector crcb=new Vector(blueCircle.centreX(),blueCircle.centreY(),redCircle.centreX(),redCircle.centreY(),#00FF00,true);
 Vector cb=new Vector(originX,originY,blueCircle.centreX(),blueCircle.centreY(),#0000FF,true);
 Vector cr=new Vector(originX,originY,redCircle.centreX(),redCircle.centreY(),#FF0000,true);
 Vector cg=new Vector(originX,originY,greenCircle.centreX(),greenCircle.centreY(),#00FF00,true);
@@ -119,7 +147,6 @@ GridBackGround bg=new GridBackGround();
 
 void setup(){
   size(canvasWidth,canvasHeight);
-  noFill();
 }
 void draw(){
   crcb.setFrom(blueCircle.centreX(),blueCircle.centreY());
@@ -128,6 +155,14 @@ void draw(){
   cb.setTo(blueCircle.centreX(),blueCircle.centreY());
   cg.setTo(greenCircle.centreX(),greenCircle.centreY());
   greenCircle.setPos(redCircle.posX-blueCircle.posX,redCircle.posY-blueCircle.posY);
+  greenCircle.setRadius(blueCircle.radius+redCircle.radius);
+ 
+  if(sqrt(greenCircle.posX*greenCircle.posX+greenCircle.posY*greenCircle.posY)<redCircle.radius+blueCircle.radius){
+    greenCircle.setFill(true);
+  }
+  else{
+    greenCircle.setFill(false);
+  }
   bg.draw();
   blueCircle.draw();
   redCircle.draw();
@@ -142,8 +177,14 @@ void mousePressed(){
    if(blueCircle.onCentre(mouseX,mouseY)){
       blueCircle.moving=true;
    }
-   if(redCircle.onCentre(mouseX,mouseY)){
+   else if(redCircle.onCentre(mouseX,mouseY)){
      redCircle.moving=true;
+   }
+   else if(blueCircle.onEdge(mouseX,mouseY)){
+     blueCircle.scaling=true;
+   }
+   else if(redCircle.onEdge(mouseX,mouseY)){
+     redCircle.scaling=true;
    }
 }
 void mouseDragged(){
@@ -155,8 +196,20 @@ void mouseDragged(){
     redCircle.posX=(mouseX-originX)/5;
     redCircle.posY=(originY-mouseY)/5;
   }
+  if(blueCircle.scaling){
+    float x=(mouseX-blueCircle.centreX());
+    float y=(mouseY-blueCircle.centreY());
+    blueCircle.radius=(sqrt(x*x+y*y)/5);
+  }
+  if(redCircle.scaling){
+    float x=(mouseX-redCircle.centreX());
+    float y=(mouseY-redCircle.centreY());
+    redCircle.radius=(sqrt(x*x+y*y)/5);
+  }
 }
 void mouseReleased(){
   blueCircle.moving=false;
   redCircle.moving=false;
+  blueCircle.scaling=false;
+  redCircle.scaling=false;
 }
