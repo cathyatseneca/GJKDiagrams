@@ -199,12 +199,18 @@ void mouseDragged(){
   if(blueCircle.scaling){
     float x=(mouseX-blueCircle.centreX());
     float y=(mouseY-blueCircle.centreY());
-    blueCircle.radius=(sqrt(x*x+y*y)/5);
+    float r=sqrt(x*x+y*y);
+    if(r > 15){
+      blueCircle.radius=(r/5);
+    }
   }
   if(redCircle.scaling){
     float x=(mouseX-redCircle.centreX());
     float y=(mouseY-redCircle.centreY());
-    redCircle.radius=(sqrt(x*x+y*y)/5);
+    float r=sqrt(x*x+y*y);
+    if(r > 15){
+      redCircle.radius=(r/5);
+    }
   }
 }
 void mouseReleased(){
