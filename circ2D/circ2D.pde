@@ -41,36 +41,67 @@ class Circle{
     outlinecolour=co;
     moving=false;
   }
+  float centreX(){return originX+(posX*5);}
+  float centreY(){return originY-(posY*5);}
   void draw(){
-    float centreX=originX+(posX*5);
-    float centreY=originY-(posY*5);
+    float cX=centreX();
+    float cY=centreY();
     stroke(outlinecolour);
-    ellipse(centreX, centreY,radius*5,radius*5);
-    line(centreX,centreY-5,centreX,centreY+5);
-    line(centreX-5,centreY,centreX+5,centreY);
+    ellipse(cX, cY,radius*5,radius*5);
+    line(cX,cY-5,cX,cY+5);
+    line(cX-5,cY,cX+5,cY);
   }
   boolean onEdge(int x,int y){return true;}
   boolean onCentre(int x,int y){
-    float centreX=originX+(posX*5);
-    float centreY=originY-(posY*5);
+    float cX=centreX();
+    float cY=centreY();
     boolean rc=false;
-    if(((x-centreX)*(x-centreX) + (y-centreY)*(y-centreY))<25){
+    if(((x-cX)*(x-cX) + (y-cY)*(y-cY))<25){
       rc=true;
     }
     return rc;
   }
 }
+
 class Vector{
-  Circle from;
-  Circle to;
-  color vectorcolour;
+  float fromX;
+  float toX;
+  float fromY;
+  float toY;
+  color vectorColour;
   boolean pointed;
-  void draw(){
-    
+  Vector(float fx,float fy,float tx,float ty,color co,boolean p){
+    fromX=fx;
+    fromY=fy;
+    toX=tx;
+    toY=ty;
+    vectorColour=co;
+    pointed=p;
   }
+  void setFrom(float fx,float fy){
+    fromX=fx;
+    fromY=fy;
+  }
+  void setTo(float tx,float ty){
+    toX=tx;
+    toY=ty;
+  }
+  void draw(){
+      stroke(vectorColour);
+      line(fromX,fromY,toX,toY);
+      float len=sqrt((fromX-toX)*(fromX-toX)+(fromY-toY)*(fromY-toY));
+      pushMatrix();
+      translate(toX,toY);
+      rotate((3*PI)/4);
+      line(((toX-fromX)/len)*10,((toY-fromY)/len)*10,0,0);
+      rotate((-6*PI)/4);
+      line(((toX-fromX)/len)*10,((toY-fromY)/len)*10,0,0);
+      popMatrix();      
+    }
 }
 Circle blueCircle=new Circle(5,5,10,#0000FF);
 Circle redCircle=new Circle(10,10,20,#FF0000);
+Vector crcb=new Vector(blueCircle.centreX(),blueCircle.centreY(),redCircle.centreX(),redCircle.centreY(),#000000,true);
 Circle greenCircle;
 GridBackGround bg=new GridBackGround();
 int canvasWidth=900;
@@ -82,9 +113,12 @@ void setup(){
   noFill();
 }
 void draw(){
+  crcb.setFrom(blueCircle.centreX(),blueCircle.centreY());
+  crcb.setTo(redCircle.centreX(),redCircle.centreY());
   bg.draw();
   blueCircle.draw();
   redCircle.draw();
+  crcb.draw();
  /* greenCircle.draw(); */
 }
 void mousePressed(){
